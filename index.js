@@ -32,6 +32,13 @@ async function run(){
             res.send(allTask)
         })
 
+        app.get('/task/details/:id', async(req, res) =>{
+            const id = req.params.id;
+            const query = {_id : ObjectId(id)}
+            const task = await taskCollection.findOne(query)
+            res.send(task)
+        })
+
         app.post('/task', async(req, res) =>{
             const task = req.body;
             const result = await taskCollection.insertOne(task);
@@ -45,6 +52,23 @@ async function run(){
             const updatedDoc = {
                 $set: {
                     isCompleted: 'completed'
+                }
+            }
+            const result = await taskCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        })
+
+        app.put('/task/update/:id', async(req, res) =>{
+            const id = req.params.id;
+            const image= req.body.image;
+            console.log(image); 
+            const task= req.body.task; 
+            const filter = { _id: ObjectId(id)};
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    image : image,
+                    task: task
                 }
             }
             const result = await taskCollection.updateOne(filter, updatedDoc, options);
